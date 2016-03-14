@@ -6,9 +6,9 @@
 clc;
 clear all;
 close all;
-outdir = 'F:\Halo_removal_results_on_growth_curve_Feb_16th\FOVs_of_interest\c22_r18';
+outdir = 'Z:\Hela_cell_time_laps_Feb_16th_2016\';
 f=0:0;
-t=0:88;
+t=88:88;
 chh=0;
 ii=0;
 r=0:24;
@@ -18,4 +18,60 @@ c =0:24;
 fout_slim_hr_ns=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_HR_NS.tif',odir,f,t,i,ch,c,r,z); % FOV, TIME, Channel, Frame Number, PAT
 
 %File name for the segmentation image
-fout_slim_=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_HR_NS.tif',odir,f,t,i,ch,c,r,z); % FOV, TIME, Channel, Frame Number, PAT
+fout_slim_seg=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_SEG.tif',odir,f,t,i,ch,c,r,z); % FOV, TIME, Channel, Frame Number, PAT
+fout_slim_overlaid=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_OVL.tif',odir,f,t,i,ch,c,r,z); % FOV, TIME, Channel, Frame Number, PAT
+saveoverlaid = 0;
+min_phaseval = -0.3;
+max_phaseval = 2.5;
+ for ff=f
+      for rr=r   
+           for cc=c 
+               for tt = t
+                    for zz = z
+                           fnsname = fout_slim_hr_ns(outdir,ff,tt,ii,chh,cc,rr,zz);
+                           fsegname = fout_slim_seg(outdir,ff,tt,ii,chh,cc,rr,zz);
+                           fovlname = fout_slim_overlaid(outdir,ff,tt,ii,chh,cc,rr,zz);
+                           im = imread(fnsname);
+                           [bw_dil,ncells,bound_map]=cell_seg(im);
+                           
+                           bw_dil = cast(bw_dil*255,'uint8');
+                           imwrite(bw_dil,fsegname);
+                           
+                           if (saveoverlaid)
+                           %Conver the image to the rgb as well
+                           im = (im-min_phaseval)*255.0/(max_phaseval-min_phaseval);
+                           %Chop out saturated values
+                           im = im.*(im<255.0)+255.0*(im>=255.0);
+                           im = im.*(im>=0);
+                           %Convert to gray
+                           rgbim = repmat(im,[1 1 3]);
+                           rgbim = cast(rgbim,'uint8');
+                           
+                           %Set all pixels on the boundaries to red
+                           [nrows,ncols] = size(im);
+                           figure(1)
+                           imagesc(im);
+                           hold on;
+                           for cellidx = 1:ncells
+                               boundary = bound_map{cellidx};
+                               idx = (boundary(:,2)-1)*nrows+boundary(:,1);
+                               for channel = 1:3
+                                    temp = rgbim(:,:,channel);
+                                    if (channel==1)
+                                        temp(idx)=255;
+                                    else
+                                        temp(idx)=0;
+                                    end
+                                    rgbim(:,:,channel) = temp;
+                               end
+                               plot(boundary(:,2), boundary(:,1), 'r', 'LineWidth', 2);
+                           end
+                           
+                           imwrite(rgbim,fovlname);
+                           end
+                    end
+               end
+           end
+      end
+ end
+ 
