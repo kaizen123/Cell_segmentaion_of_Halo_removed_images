@@ -1,0 +1,21 @@
+
+%This code performs the segmentations for all the cells in the fov for all
+%the time steps
+%Author: Tan H. Nguyen
+%University of Illinois at Urbana-Champaign
+clc;
+clear all;
+close all;
+outdir = 'F:\Halo_removal_results_on_growth_curve_Feb_16th\FOVs_of_interest\c22_r18';
+f=0:0;
+t=0:88;
+chh=0;
+ii=0;
+r=0:24;
+z=0:0;
+c =0:24;
+%File name for the Halo-removed image
+fout_slim_hr_ns=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_HR_NS.tif',odir,f,t,i,ch,c,r,z); % FOV, TIME, Channel, Frame Number, PAT
+
+%File name for the segmentation image
+fout_slim_=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_HR_NS.tif',odir,f,t,i,ch,c,r,z); % FOV, TIME, Channel, Frame Number, PAT
