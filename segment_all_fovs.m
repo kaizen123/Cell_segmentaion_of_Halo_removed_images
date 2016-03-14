@@ -6,7 +6,7 @@
 clc;
 clear all;
 close all;
-outdir = 'Z:\Hela_cell_time_laps_Feb_16th_2016\';
+outdir = 'D:\Hela_cell_time_laps_Feb_16th_2016\';
 matlab_dir = strcat(outdir,'\mat_files\');
 if (~exist(matlab_dir))
     mkdir(matlab_dir);
@@ -29,11 +29,15 @@ fout_bound_mat=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_
 saveoverlaid = 0;
 min_phaseval = -0.3;
 max_phaseval = 2.5;
+p=gcp;
+delete(p);
+p=parpool(8);
  for ff=f
-      for rr=r   
-           for cc=c 
-               for tt = t
+      for tt=t   
+          parfor cc=c 
+               for rr = r
                     for zz = z
+                           disp(['Processing r: ' num2str(rr) ', c: ' num2str(cc) ', t: ' num2str(tt)]);
                            fnsname = fout_slim_hr_ns(outdir,ff,tt,ii,chh,cc,rr,zz);
                            fsegname = fout_slim_seg(outdir,ff,tt,ii,chh,cc,rr,zz);
                            fmatname = fout_bound_mat(matlab_dir,ff,tt,ii,chh,cc,rr,zz); %Name of the mat file to be saved
@@ -82,4 +86,5 @@ max_phaseval = 2.5;
            end
       end
  end
+ delete(p);
  
