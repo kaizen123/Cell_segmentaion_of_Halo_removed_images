@@ -12,7 +12,7 @@ if (~exist(matlab_dir))
     mkdir(matlab_dir);
 end
 f=0:0;
-t=[0:87];
+t=[0:88];
 chh=0;
 ii=0;
 r=0:24;
@@ -62,15 +62,28 @@ pixelratio = 3.2;%Pixel per micron
                                 slim_total_phase = sum(slimim(curpixidxlist));
                                 slim_thres_total_phase = sum(slimim(curpixidxlist).*(slimim(curpixidxlist)>0));
                                 hr_total_phase = sum(hrnsim(curpixidxlist));
-                                drymass(end+1,:)=0.423566*[slim_total_phase slim_thres_total_phase hr_total_phase]/(pixelratio)^2;
-                                drymass_over_time(end+1,:)=drymass(end,:);
+                                if ((hr_total_phase>50)&(hr_total_phase<3000))%If the cell is too small
+                                    drymass(end+1,:)=0.423566*[slim_total_phase slim_thres_total_phase hr_total_phase]/(pixelratio)^2;
+                                    drymass_over_time(end+1,:)=drymass(end,:);
+                                end
                            end
                     end
                end
           end
-           
+          figure(1);
+          plot(drymass(:,2),drymass(:,3),'+r');
+          xlabel('Thresholded');
+          ylabel('Halo removed');
+          drawnow;
+          xhist = linspace(50,3000,100);
+          xhist_slim_thr = linspace(25,1500,100);
+          cur_hr_total_dm_hist = hist(drymass_over_time(:,3),xhist);
+          cur_slim_thr_dm_hist = hist(drymass_over_time(:,2),xhist_slim_hr);
+          matfilename = f_dm_over_t(pwd,tt);
+          save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist',');
       end
       
  end
- delete(p);
+ save('All_dry_mass.mat','drymass');
+ %delete(p);
  

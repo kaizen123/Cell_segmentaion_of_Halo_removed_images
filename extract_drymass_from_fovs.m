@@ -32,8 +32,10 @@ f_dm_over_t=@(odir,t) sprintf('%s\\total_drymass_at_%d.mat',odir,t); % FOV, TIME
 %delete(p);
 %p=parpool(8);
 drymass = zeros(0,3); %Each row is a cell, the next is the total mass of slim, thresholded SLIM and the halo-removed SLIM
-
+nbins = 100;
 pixelratio = 3.2;%Pixel per micron
+combined_slim_thr_hist = zeros(nbins,length(t));
+combined_hr_hist = zeros(nbins,length(t));
  for ff=f
       for tt=t  
           drymass_over_time = zeros(0,3);
@@ -62,23 +64,37 @@ pixelratio = 3.2;%Pixel per micron
                                 slim_total_phase = sum(slimim(curpixidxlist));
                                 slim_thres_total_phase = sum(slimim(curpixidxlist).*(slimim(curpixidxlist)>0));
                                 hr_total_phase = sum(hrnsim(curpixidxlist));
-                                drymass(end+1,:)=0.423566*[slim_total_phase slim_thres_total_phase hr_total_phase]/(pixelratio)^2;
-                                drymass_over_time(end+1,:)=drymass(end,:);
+                                if ((hr_total_phase>50)&(hr_total_phase<3000))%If the cell is too small
+                                    drymass(end+1,:)=0.423566*[slim_total_phase slim_thres_total_phase hr_total_phase]/(pixelratio)^2;
+                                    drymass_over_time(end+1,:)=drymass(end,:);
+                                end
                            end
                     end
                end
           end
           figure(1);
-          plot(drymass(:,2),drymass(:,3),'+r');
+          plot(drymass_over_time(:,2),drymass_over_time(:,3),'+r');
           xlabel('Thresholded');
           ylabel('Halo removed');
           drawnow;
-          
+          xhist = linspace(50,2000,nbins);
+          xhist_slim_thr = linspace(25,1000,nbins);
+          cur_hr_total_dm_hist = hist(drymass_over_time(:,3),xhist);
+          cur_slim_thr_dm_hist = hist(drymass_over_time(:,2),xhist_slim_thr);
           matfilename = f_dm_over_t(pwd,tt);
-          save(matfilename,'drymass_over_time');
+          combined_slim_thr_hist(:,tt+1)=cur_slim_thr_dm_hist(:);
+          combined_hr_hist(:,tt+1)=cur_slim_thr_dm_hist(:);
+          figure(2);
+          subplot(121);
+          imagesc(combined_slim_thr_hist);colormap jet;title('Thresholded histogram');
+          subplot(122);
+          imagesc(combined_hr_hist);colormap jet;title('HR histogram');
+          drawnow;
+          
+          save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist','cur_hr_total_dm_hist');
       end
       
  end
- save('All_dry_mass.mat','drymass');
+ save('All_dry_mass.mat','drymass','combined_slim_thr_hist','combined_hr_hist');
  %delete(p);
  
