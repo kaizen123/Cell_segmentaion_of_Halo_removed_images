@@ -21,7 +21,7 @@ function [bw_dil,ncells,bound_map]=cell_seg(im)
     se = strel('line',4,0);
     bw_dil = imdilate(bw,[se90 se]); %Dilate the image horizontally and vertically
     bw_dil = imfill(bw_dil,'holes');%Fill out the holes inside the cells
-    minarea = 2000;
+    minarea = 1000;
 
     %Make sure the background is nicer
     bg = 1-bw_dil;

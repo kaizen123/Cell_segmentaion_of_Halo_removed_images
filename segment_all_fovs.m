@@ -12,7 +12,7 @@ if (~exist(matlab_dir))
     mkdir(matlab_dir);
 end
 f=0:0;
-t=[0:10 80:88];
+t=[11:79];
 chh=0;
 ii=0;
 r=0:24;
@@ -26,17 +26,18 @@ fout_slim_seg=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_S
 fout_slim_overlaid=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_OVL.tif',odir,f,t,i,ch,c,r,z); % FOV, TIME, Channel, Frame Number, PAT
 fout_bound_mat=@(odir,f,t,i,ch,c,r,z) sprintf('%s\\f%d_t%d_i%d_ch%d_c%d_r%d_z%d_bound.mat',odir,f,t,i,ch,c,r,z); % FOV, TIME, Channel, Frame Number, PAT
 
-saveoverlaid = 0;
-min_phaseval = -0.3;
-max_phaseval = 2.5;
 p=gcp;
 delete(p);
-p=parpool(8);
+%p=parpool(8);
  for ff=f
       for tt=t   
-          parfor cc=c 
+          for cc=c 
                for rr = r
                     for zz = z
+                            saveoverlaid = 0;
+                            min_phaseval = -0.3;
+                            max_phaseval = 2.5;
+
                            disp(['Processing r: ' num2str(rr) ', c: ' num2str(cc) ', t: ' num2str(tt)]);
                            fnsname = fout_slim_hr_ns(outdir,ff,tt,ii,chh,cc,rr,zz);
                            fsegname = fout_slim_seg(outdir,ff,tt,ii,chh,cc,rr,zz);
@@ -60,9 +61,7 @@ p=parpool(8);
 
                                %Set all pixels on the boundaries to red
                                [nrows,ncols] = size(im);
-                               figure(1)
-                               imagesc(im);
-                               hold on;
+                              
                                for cellidx = 1:ncells
                                    boundary = bound_map{cellidx};
                                    idx = (boundary(:,2)-1)*nrows+boundary(:,1);
@@ -75,7 +74,6 @@ p=parpool(8);
                                         end
                                         rgbim(:,:,channel) = temp;
                                    end
-                                   plot(boundary(:,2), boundary(:,1), 'r', 'LineWidth', 2);
                                end
 
                                imwrite(rgbim,fovlname);

@@ -5,7 +5,7 @@ function demo
     clc;
     clear all;
     close all;
-    im = cast(imread('E:\Data_for_cell_segmentation\f0_t71_i0_ch0_c10_r16_z0_HR_NS.tif'),'single');
+    im = cast(imread('C:\Users\QLI\Desktop\Full_fov_segmentation_images\f0_t0_i0_ch0_c12_r14_z0_HR_NS.tif'),'single');
 
     tic;
     [~,ncells,bound_map]=cell_seg(im);
