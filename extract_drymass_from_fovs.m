@@ -155,16 +155,16 @@ else
     %reject the first and the last histogram band to ignore the extreme
     %values...
     
-    
+    time_interval = 22;
     figure(2);
     subplot(221);
-    imagesc(t,xhist(2:end-1),combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Thresholded histogram');
+    imagesc(t*time_interval,xhist(2:end-1),combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Thresholded histogram');
     subplot(222);
-    imagesc(t,xhist_slim_thr(2:end-1),combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('HR histogram');
+    imagesc(t*time_interval,xhist_slim_thr(2:end-1),combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('HR histogram');
     subplot(223);
-    imagesc(t,xhist(2:end-1),norm_combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. Thresholded histogram');
+    imagesc(t*time_interval,xhist(2:end-1),norm_combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. Thresholded histogram');
     subplot(224);
-    imagesc(t,xhist_slim_thr(2:end-1),norm_combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. HR histogram');
+    imagesc(t*time_interval,xhist_slim_thr(2:end-1),norm_combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. HR histogram');
     drawnow;
 
     
