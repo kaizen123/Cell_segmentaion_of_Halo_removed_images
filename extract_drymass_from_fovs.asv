@@ -63,7 +63,7 @@ if (update_dry_mass)
                                    slimim = single(imread(fslimname));
                                    hrnsim = single(imread(fnsname));
                                    minpixelnum = 10000; %Number of pixels in a cells
-                                   maxpixelnum = 70000;
+                                   m
                                        for cellidx=1:ncells
                                             %Get the current indices of all the pixels
                                             curpixidxlist = S(cellidx).PixelIdxList;
@@ -74,7 +74,7 @@ if (update_dry_mass)
                                             hr_dm = hr_total_phase*0.4235/pixelratio^2;
                                             slim_dm = slim_total_phase*0.4235/pixelratio^2;
                                             slim_thres_dm = slim_thres_total_phase*0.4235/pixelratio^2;
-                                            if ((hr_dm<500)&(length(curpixidxlist)>minpixelnum)&(length(curpixidxlist)<maxpixelnum))%If the cell is too small
+                                            if ((hr_dm<500)&(length(curpixidxlist)>minpixelnum))%If the cell is too small
                                                 drymass(end+1,:)=[slim_dm slim_thres_dm hr_dm];
                                                 drymass_over_time(end+1,:)=drymass(end,:);
                                             
