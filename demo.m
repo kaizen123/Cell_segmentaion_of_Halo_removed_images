@@ -5,13 +5,13 @@ function demo
     clc;
     clear all;
     close all;
-    im = cast(imread('C:\Users\QLI\Desktop\Full_fov_segmentation_images\f0_t0_i0_ch0_c12_r14_z0_HR_NS.tif'),'single');
+    im = cast(imread('D:\Hela_cell_time_laps_Feb_16th_2016\f0_t0_i0_ch0_c6_r13_z0_HR_NS.tif'),'single');
 
     tic;
     [~,ncells,bound_map]=cell_seg(im);
     toc;
     figure(2);
-    imagesc(im);
+    imagesc(im);colorbar;
     hold on;
     for cellidx = 1:ncells
        boundary = bound_map{cellidx};

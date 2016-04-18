@@ -36,7 +36,7 @@ nbins = 200;
 pixelratio = 3.2;%Pixel per micron
 combined_slim_thr_hist = zeros(nbins,length(t));
 combined_hr_hist = zeros(nbins,length(t));
-update_dry_mass = 0;
+update_dry_mass = 1;
 if (update_dry_mass)
      for ff=f
           for tt=t  
@@ -69,7 +69,7 @@ if (update_dry_mass)
                                     hr_dm = hr_total_phase*0.4235/pixelratio^2;
                                     slim_dm = slim_total_phase*0.4235/pixelratio^2;
                                     slim_thres_dm = slim_thres_total_phase*0.4235/pixelratio^2;
-                                    if ((hr_dm>50)&(hr_dm<1000))%If the cell is too small
+                                    if (hr_dm<500)%If the cell is too small
                                         drymass(end+1,:)=[slim_dm slim_thres_dm hr_dm];
                                         drymass_over_time(end+1,:)=drymass(end,:);
                                     end
