@@ -32,7 +32,7 @@ f_dm_over_t=@(odir,t) sprintf('%s/total_drymass_at_%d.mat',odir,t); % FOV, TIME,
 %delete(p);
 %p=parpool(8);
 drymass = zeros(0,3); %Each row is a cell, the next is the total mass of slim, thresholded SLIM and the halo-removed SLIM
-nbins = 150;
+nbins = 200;
 pixelratio = 3.2;%Pixel per micron
 combined_slim_thr_hist = zeros(nbins,length(t));
 combined_hr_hist = zeros(nbins,length(t));
@@ -74,7 +74,7 @@ if (update_dry_mass)
                                             hr_dm = hr_total_phase*0.4235/pixelratio^2;
                                             slim_dm = slim_total_phase*0.4235/pixelratio^2;
                                             slim_thres_dm = slim_thres_total_phase*0.4235/pixelratio^2;
-                                            if ((hr_dm<500)&(length(curpixidxlist)>minpixelnum)&(length(curpixidxlist)<maxpixelnum))%If the cell is too small
+                                            if ((hr_dm<1000)&(length(curpixidxlist)>minpixelnum)&(length(curpixidxlist)<maxpixelnum))%If the cell is too small
                                                 drymass(end+1,:)=[slim_dm slim_thres_dm hr_dm];
                                                 drymass_over_time(end+1,:)=drymass(end,:);
                                             
@@ -93,8 +93,8 @@ if (update_dry_mass)
               xlabel('Thresholded');
               ylabel('Halo removed');
               drawnow;
-              xhist = linspace(25,500,nbins);
-              xhist_slim_thr = linspace(25,500,nbins);
+              xhist = linspace(25,1000,nbins);
+              xhist_slim_thr = linspace(25,1000,nbins);
              
                                
               cur_hr_total_dm_hist = hist(drymass_over_time(:,3),xhist);
