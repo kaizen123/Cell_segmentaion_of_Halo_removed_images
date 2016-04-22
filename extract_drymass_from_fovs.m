@@ -37,7 +37,7 @@ pixelratio = 3.2;%Pixel per micron
 combined_slim_thr_hist = zeros(nbins,length(t));
 combined_hr_hist = zeros(nbins,length(t));
 update_dry_mass = 1;
-override  = 0;
+override  = 1;
 max_slim_thr_mass = 300;
  
 if (update_dry_mass)
@@ -64,7 +64,7 @@ if (update_dry_mass)
                                    ncells = size(S,1); %Get the number of cells
                                    slimim = single(imread(fslimname));
                                    hrnsim = single(imread(fnsname));
-                                   minpixelnum = 10000; %Number of pixels in a cells
+                                   minpixelnum = 5000; %Number of pixels in a cells
                                    maxpixelnum = 70000;
                                        for cellidx=1:ncells
                                             %Get the current indices of all the pixels
@@ -117,8 +117,8 @@ if (update_dry_mass)
               imagesc(t,xhist(2:end-1),norm_combined_hr_hist);colormap jet;colorbar;title('Norm. HR histogram');
               %drawnow;
 
-                  %save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist','cur_hr_total_dm_hist',...
-                  %    'norm_combined_slim_thr_hist','norm_combined_hr_hist');
+              save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist','cur_hr_total_dm_hist',...
+                      'norm_combined_slim_thr_hist','norm_combined_hr_hist');
                
                   
               %Compute the mean and the standard deviation of the drymass
@@ -141,7 +141,7 @@ if (update_dry_mass)
               subplot(223);plot(t,std_thr_dm);title('Std. Thres SLIM over time');
               subplot(224);plot(t,std_dm);title('Std. SLIM HR over time');
               
-              
+              drawnow;
               end
           end
 
