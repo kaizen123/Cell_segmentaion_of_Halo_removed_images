@@ -9,7 +9,7 @@ close all;
 outdir = 'D:\Hela_cell_time_laps_Feb_16th_2016\';
 matlab_dir = strcat(outdir,'\mat_files\');
 if (~exist(matlab_dir))
-    mkdir(matlab_dir);
+%    mkdir(matlab_dir);
 end
 f=0:0;
 t=[0:88];
@@ -37,7 +37,9 @@ pixelratio = 3.2;%Pixel per micron
 combined_slim_thr_hist = zeros(nbins,length(t));
 combined_hr_hist = zeros(nbins,length(t));
 update_dry_mass = 1;
-override  = 1;
+override  = 0;
+max_slim_thr_mass = 300;
+ 
 if (update_dry_mass)
      for ff=f
           for tt=t  
@@ -92,31 +94,54 @@ if (update_dry_mass)
               plot(drymass_over_time(:,2),drymass_over_time(:,3),'+r');
               xlabel('Thresholded');
               ylabel('Halo removed');
-              drawnow;
+              %drawnow;
               xhist = linspace(25,1000,nbins);
-              xhist_slim_thr = linspace(25,1000,nbins);
+              xhist_slim_thr = linspace(25,max_slim_thr_mass,nbins);
              
                                
               cur_hr_total_dm_hist = hist(drymass_over_time(:,3),xhist);
               cur_slim_thr_dm_hist = hist(drymass_over_time(:,2),xhist_slim_thr);
               combined_slim_thr_hist(:,tt+1)=cur_slim_thr_dm_hist(:);
               combined_hr_hist(:,tt+1)=cur_hr_total_dm_hist(:);
-              norm_combined_slim_thr_hist = combined_slim_thr_hist./repmat(sum(combined_slim_thr_hist,1)+1e-6,[size(combined_slim_thr_hist,1) 1]);
-              norm_combined_hr_hist = combined_hr_hist./repmat(sum(combined_hr_hist,1)+1e-6,[size(combined_hr_hist,1) 1]);
+              norm_combined_slim_thr_hist = combined_slim_thr_hist(2:end-1,:)./repmat(sum(combined_slim_thr_hist(2:end-1,:),1)+1e-6,[size(combined_slim_thr_hist(2:end-1,:),1) 1]);
+              norm_combined_hr_hist = combined_hr_hist(2:end-1,:)./repmat(sum(combined_hr_hist(2:end-1,:),1)+1e-6,[size(combined_hr_hist(2:end-1,:),1) 1]);
 
               figure(2);
               subplot(221);
-              imagesc(t,xhist(2:end-1),combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Thresholded histogram');
+              imagesc(t,xhist_slim_thr(2:end-1),combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Thresholded histogram');
               subplot(222);
-              imagesc(t,xhist_slim_thr(2:end-1),combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('HR histogram');
+              imagesc(t,xhist(2:end-1),combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('HR histogram');
               subplot(223);
-              imagesc(t,xhist(2:end-1),norm_combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. Thresholded histogram');
+              imagesc(t,xhist_slim_thr(2:end-1),norm_combined_slim_thr_hist);colormap jet;colorbar;title('Norm. Thresholded histogram');
               subplot(224);
-              imagesc(t,xhist(2:end-1),norm_combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. HR histogram');
-              drawnow;
+              imagesc(t,xhist(2:end-1),norm_combined_hr_hist);colormap jet;colorbar;title('Norm. HR histogram');
+              %drawnow;
 
-                  save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist','cur_hr_total_dm_hist',...
-                      'norm_combined_slim_thr_hist','norm_combined_hr_hist');
+                  %save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist','cur_hr_total_dm_hist',...
+                  %    'norm_combined_slim_thr_hist','norm_combined_hr_hist');
+               
+                  
+              %Compute the mean and the standard deviation of the drymass
+              xhist_mat = repmat(xhist(:),[1 length(t)]);
+              xhist_thr_mat = repmat(xhist_slim_thr(:),[1 length(t)]);
+              mat1 = xhist_mat(2:end-1,:).*norm_combined_hr_hist;
+              mat2 = xhist_thr_mat(2:end-1,:).*norm_combined_slim_thr_hist;
+              mean_thr_dm = sum(mat2,1);
+              mean_dm =sum(mat1,1);
+              std_dm = sqrt(sum((xhist_mat(2:end-1,:) - repmat(mean_dm,[size(mat1,1) 1])).^2.*norm_combined_hr_hist,1));
+              std_thr_dm = sqrt(sum((xhist_thr_mat(2:end-1,:) - repmat(mean_thr_dm,[size(mat1,1) 1])).^2.*norm_combined_slim_thr_hist,1));
+              
+              %std_thr_dm = std(mat1,1);
+              %std_dm = std(mat2,1);
+              
+              
+              figure(3);
+              subplot(221);plot(t,mean_thr_dm);title('Mean Thres. SLIM ofver time');
+              subplot(222);plot(t,mean_dm);title('Mean SLIM HR over time');
+              subplot(223);plot(t,std_thr_dm);title('Std. Thres SLIM over time');
+              subplot(224);plot(t,std_dm);title('Std. SLIM HR over time');
+              
+              
               end
           end
 
@@ -129,7 +154,9 @@ else
     %Compute the best fit coefficients
     slim_thr_mass = drymass(1:20:end,2);%A single cells is expected to appear 15 times...Lazy man approach!
     hr_mass = drymass(1:20:end,3);
-    
+    good_sample = find(slim_thr_mass<max_slim_thr_mass);
+    slim_thr_mass=slim_thr_mass(good_sample);
+    hr_mass = hr_mass(good_sample);
     
     alpha = sum(hr_mass)/sum(slim_thr_mass);
     disp(['Fitting coeff: ' num2str(alpha)]);
@@ -139,7 +166,7 @@ else
     xlabel('Thresholded SLIM total drymass');
     ylabel('Halo removed total drymass');
     xmin = 0;
-    xmax = 1020;
+    xmax = max_slim_thr_mass;
     ymin = 0;
     ymax = 1020;
     axis([xmin xmax ymin ymax]);
@@ -171,13 +198,13 @@ else
     time_interval = 22;
     figure(2);
     subplot(221);
-    imagesc(t*time_interval,xhist(2:end-1),combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Thresholded histogram');
+    imagesc(t*time_interval,xhist_slim_thr(2:end-1),combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Thresholded histogram');
     subplot(222);
-    imagesc(t*time_interval,xhist_slim_thr(2:end-1),combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('HR histogram');
+    imagesc(t*time_interval,xhist(2:end-1),combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('HR histogram');
     subplot(223);
-    imagesc(t*time_interval,xhist(2:end-1),norm_combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. Thresholded histogram');
+    imagesc(t*time_interval,xhist_slim_thr(2:end-1),norm_combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. Thresholded histogram');
     subplot(224);
-    imagesc(t*time_interval,xhist_slim_thr(2:end-1),norm_combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. HR histogram');
+    imagesc(t*time_interval,xhist(2:end-1),norm_combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. HR histogram');
     drawnow;
 
     
