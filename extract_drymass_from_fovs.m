@@ -36,7 +36,7 @@ nbins = 200;
 pixelratio = 3.2;%Pixel per micron
 combined_slim_thr_hist = zeros(nbins,length(t));
 combined_hr_hist = zeros(nbins,length(t));
-update_dry_mass = 1;
+update_dry_mass = 0;
 override  = 1;
 max_slim_thr_mass = 300;
  
@@ -154,13 +154,43 @@ else
     %Compute the best fit coefficients
     slim_thr_mass = drymass(1:20:end,2);%A single cells is expected to appear 15 times...Lazy man approach!
     hr_mass = drymass(1:20:end,3);
-    good_sample = find(slim_thr_mass<max_slim_thr_mass);
+    good_sample = intersect(find(slim_thr_mass<max_slim_thr_mass),find(slim_thr_mass>20));
     slim_thr_mass=slim_thr_mass(good_sample);
     hr_mass = hr_mass(good_sample);
     
     alpha = sum(hr_mass)/sum(slim_thr_mass);
     disp(['Fitting coeff: ' num2str(alpha)]);
+    %Compute the standard deviation of alpha
+    alpha_arr=hr_mass./slim_thr_mass;
+    std_alpha = std(alpha_arr(:));
+    disp(['Standard deviation of alpha: ' num2str(std_alpha)]);
     %Draw all the data point
+    %Compute the slope for different intervals
+    
+    %SLIM_mass from 0->100
+    good_sample = intersect(find(slim_thr_mass<100),find(slim_thr_mass>10));
+    slim_thr_mass1=slim_thr_mass(good_sample);
+    hr_mass1 = hr_mass(good_sample);
+    alpha = sum(hr_mass1)/sum(slim_thr_mass1);
+    std_alpha = std(hr_mass1./slim_thr_mass1);
+    disp(['Fitting coeff of [0->100]: ' num2str(alpha), '+/- ' num2str(std_alpha)]);
+    
+    %SLIM_mass from 100->200
+    good_sample = intersect(find(slim_thr_mass<200),find(slim_thr_mass>100));
+    slim_thr_mass1=slim_thr_mass(good_sample);
+    hr_mass1 = hr_mass(good_sample);
+    alpha = sum(hr_mass1)/sum(slim_thr_mass1);
+    std_alpha = std(hr_mass1./slim_thr_mass1);
+    disp(['Fitting coeff of [100->200]: ' num2str(alpha), '+/- ' num2str(std_alpha)]);
+ 
+     %SLIM_mass from 200->300
+    good_sample = intersect(find(slim_thr_mass<300),find(slim_thr_mass>200));
+    slim_thr_mass1=slim_thr_mass(good_sample);
+    hr_mass1 = hr_mass(good_sample);
+    alpha = sum(hr_mass1)/sum(slim_thr_mass1);
+    std_alpha = std(hr_mass1./slim_thr_mass1);
+    disp(['Fitting coeff of [200->300]: ' num2str(alpha), '+/- ' num2str(std_alpha)]);
+ 
     figure(1);
     plot(slim_thr_mass,hr_mass,'.b'); 
     xlabel('Thresholded SLIM total drymass');
