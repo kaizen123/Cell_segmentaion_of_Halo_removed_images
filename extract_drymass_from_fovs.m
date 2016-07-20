@@ -37,7 +37,7 @@ pixelratio = 3.2;%Pixel per micron
 combined_slim_thr_hist = zeros(nbins,length(t));
 combined_hr_hist = zeros(nbins,length(t));
 update_dry_mass = 0;
-override  = 1;
+override  = 0;
 max_slim_thr_mass = 300;
  
 if (update_dry_mass)
@@ -117,8 +117,8 @@ if (update_dry_mass)
               imagesc(t,xhist(2:end-1),norm_combined_hr_hist);colormap jet;colorbar;title('Norm. HR histogram');
               %drawnow;
 
-              save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist','cur_hr_total_dm_hist',...
-                      'norm_combined_slim_thr_hist','norm_combined_hr_hist');
+              %save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist','cur_hr_total_dm_hist',...
+              %        'norm_combined_slim_thr_hist','norm_combined_hr_hist');
                
                   
               %Compute the mean and the standard deviation of the drymass
@@ -146,8 +146,8 @@ if (update_dry_mass)
           end
 
     
-     save('All_dry_mass.mat','drymass','combined_slim_thr_hist','combined_hr_hist','norm_combined_slim_thr_hist','norm_combined_hr_hist',...
-         'xhist','xhist_slim_thr');
+     %save('All_dry_mass.mat','drymass','combined_slim_thr_hist','combined_hr_hist','norm_combined_slim_thr_hist','norm_combined_hr_hist',...
+     %    'xhist','xhist_slim_thr');
 else
     load('All_dry_mass.mat');%Load all dry mass values and also the histogram of drymass over the time
     %Display the scatter plot for all the mass
@@ -228,13 +228,13 @@ else
     time_interval = 22;
     figure(2);
     subplot(221);
-    imagesc(t*time_interval,xhist_slim_thr(2:end-1),combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Thresholded histogram');
+    imagesc(t*time_interval,xhist_slim_thr(2:end/2-1),combined_slim_thr_hist(2:end/2-1,:));colormap jet;colorbar;title('Thresholded histogram');
     subplot(222);
-    imagesc(t*time_interval,xhist(2:end-1),combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('HR histogram');
+    imagesc(t*time_interval,xhist(2:end/2-1),combined_hr_hist(2:end/2-1,:));colormap jet;colorbar;title('HR histogram');
     subplot(223);
-    imagesc(t*time_interval,xhist_slim_thr(2:end-1),norm_combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. Thresholded histogram');
+    imagesc(t*time_interval,xhist_slim_thr(2:end/2-1),norm_combined_slim_thr_hist(2:end/2-1,:));colormap jet;colorbar;title('Norm. Thresholded histogram');
     subplot(224);
-    imagesc(t*time_interval,xhist(2:end-1),norm_combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('Norm. HR histogram');
+    imagesc(t*time_interval,xhist(2:end/2-1),norm_combined_hr_hist(2:end/2-1,:));colormap jet;colorbar;title('Norm. HR histogram');
     drawnow;
 
     

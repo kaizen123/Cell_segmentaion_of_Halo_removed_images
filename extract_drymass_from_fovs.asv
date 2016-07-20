@@ -37,7 +37,7 @@ pixelratio = 3.2;%Pixel per micron
 combined_slim_thr_hist = zeros(nbins,length(t));
 combined_hr_hist = zeros(nbins,length(t));
 update_dry_mass = 0;
-override  = 1;
+override  = 0;
 max_slim_thr_mass = 300;
  
 if (update_dry_mass)
@@ -117,8 +117,8 @@ if (update_dry_mass)
               imagesc(t,xhist(2:end-1),norm_combined_hr_hist);colormap jet;colorbar;title('Norm. HR histogram');
               %drawnow;
 
-              save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist','cur_hr_total_dm_hist',...
-                      'norm_combined_slim_thr_hist','norm_combined_hr_hist');
+              %save(matfilename,'drymass_over_time','cur_slim_thr_dm_hist','cur_hr_total_dm_hist',...
+              %        'norm_combined_slim_thr_hist','norm_combined_hr_hist');
                
                   
               %Compute the mean and the standard deviation of the drymass
@@ -146,8 +146,8 @@ if (update_dry_mass)
           end
 
     
-     save('All_dry_mass.mat','drymass','combined_slim_thr_hist','combined_hr_hist','norm_combined_slim_thr_hist','norm_combined_hr_hist',...
-         'xhist','xhist_slim_thr');
+     %save('All_dry_mass.mat','drymass','combined_slim_thr_hist','combined_hr_hist','norm_combined_slim_thr_hist','norm_combined_hr_hist',...
+     %    'xhist','xhist_slim_thr');
 else
     load('All_dry_mass.mat');%Load all dry mass values and also the histogram of drymass over the time
     %Display the scatter plot for all the mass
@@ -169,19 +169,27 @@ else
     
     %SLIM_mass from 0->100
     good_sample = intersect(find(slim_thr_mass<100),find(slim_thr_mass>10));
-    slim_thr_mass=slim_thr_mass(good_sample);
-    hr_mass = hr_mass(good_sample);
-    alpha = sum(hr_mass)/sum(slim_thr_mass);
-    std_alpha = std(hr_mass./slim_thr_mass);
-    disp(['Fitting coeff of [0->10]: ' num2str(alpha), '+/- ' num2str(std_alpha)]);
+    slim_thr_mass1=slim_thr_mass(good_sample);
+    hr_mass1 = hr_mass(good_sample);
+    alpha = sum(hr_mass1)/sum(slim_thr_mass1);
+    std_alpha = std(hr_mass1./slim_thr_mass1);
+    disp(['Fitting coeff of [0->100]: ' num2str(alpha), '+/- ' num2str(std_alpha)]);
     
     %SLIM_mass from 100->200
-    good_sample = intersect(find(slim_thr_mass<100),find(slim_thr_mass>10));
-    slim_thr_mass=slim_thr_mass(good_sample);
-    hr_mass = hr_mass(good_sample);
-    alpha = sum(hr_mass)/sum(slim_thr_mass);
-    std_alpha = std(hr_mass./slim_thr_mass);
-    disp(['Fitting coeff of [0->10]: ' num2str(alpha), '+/- ' num2str(std_alpha)]);
+    good_sample = intersect(find(slim_thr_mass<200),find(slim_thr_mass>100));
+    slim_thr_mass1=slim_thr_mass(good_sample);
+    hr_mass1 = hr_mass(good_sample);
+    alpha = sum(hr_mass1)/sum(slim_thr_mass1);
+    std_alpha = std(hr_mass1./slim_thr_mass1);
+    disp(['Fitting coeff of [100->200]: ' num2str(alpha), '+/- ' num2str(std_alpha)]);
+ 
+     %SLIM_mass from 200->300
+    good_sample = intersect(find(slim_thr_mass<300),find(slim_thr_mass>200));
+    slim_thr_mass1=slim_thr_mass(good_sample);
+    hr_mass1 = hr_mass(good_sample);
+    alpha = sum(hr_mass1)/sum(slim_thr_mass1);
+    std_alpha = std(hr_mass1./slim_thr_mass1);
+    disp(['Fitting coeff of [200->300]: ' num2str(alpha), '+/- ' num2str(std_alpha)]);
  
     figure(1);
     plot(slim_thr_mass,hr_mass,'.b'); 
@@ -221,6 +229,7 @@ else
     figure(2);
     subplot(221);
     imagesc(t*time_interval,xhist_slim_thr(2:end-1),combined_slim_thr_hist(2:end-1,:));colormap jet;colorbar;title('Thresholded histogram');
+    axis([t*time_interval(1) t*time_interval(end)])
     subplot(222);
     imagesc(t*time_interval,xhist(2:end-1),combined_hr_hist(2:end-1,:));colormap jet;colorbar;title('HR histogram');
     subplot(223);
